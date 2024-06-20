@@ -296,23 +296,45 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
       </div>
       {isOpenPlaylist && (
         <div className={cn("playlist", theme === "dark" && "playlist-dark")}>
-          {playlist?.map((track, index) => (
-            <TrackItem
-              handleDragStart={() => (dragItemRef.current = index)}
-              onDragEnter={() => (dragOverRef.current = index)}
-              hendleDragEnd={onDrop}
-              hendleDragOver={onDragOver}
-              currentTrackIndex={currentTrackIndex}
-              handleDeleteTrack={() => {
-                handleDeleteTrack(index);
+          {playlist.length > 0 ? (
+            playlist?.map((track, index) => (
+              <TrackItem
+                handleDragStart={() => (dragItemRef.current = index)}
+                onDragEnter={() => (dragOverRef.current = index)}
+                hendleDragEnd={onDrop}
+                hendleDragOver={onDragOver}
+                currentTrackIndex={currentTrackIndex}
+                handleDeleteTrack={() => {
+                  handleDeleteTrack(index);
+                }}
+                index={index}
+                skipTo={() => skipTo(index)}
+                title={track.title}
+                key={index}
+                fill={fillButton}
+              />
+            ))
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-              index={index}
-              skipTo={() => skipTo(index)}
-              title={track.title}
-              key={index}
-              fill={fillButton}
-            />
-          ))}
+            >
+              <div style={{width: "155px", height: "50px", padding: "20px"}}>
+                Добавьте песни с помощью иконки:
+              </div>
+              <label htmlFor="file-upload">
+                <Add
+                  className="icon"
+                  width="50px"
+                  height="50px"
+                  fill={fillButton}
+                />
+              </label>
+            </div>
+          )}
         </div>
       )}
 
