@@ -1,0 +1,18 @@
+
+.track {
+    display: flex;
+    align-items: center;
+    padding: 7px;
+    cursor: pointer;
+    justify-content: space-between;
+    border-radius: 10px;
+  }
+  
+  .hover-track:hover {
+    background-color: #ffffff43;
+  }
+  
+  .track.active {
+    
+    background-color: #6a6a6a7c;
+  }
