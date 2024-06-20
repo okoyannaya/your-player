@@ -1,20 +1,19 @@
 import {createContext, useState} from "react";
 import {Quota} from "./components/quota/quota";
 import {Player} from "./components/audio-player/player";
-import cn from 'classnames'
+import cn from "classnames";
 import "./App.css";
 
 export const ThemeContext = createContext("");
-const themeStorage = localStorage.getItem("theme");
+const themeStorage = localStorage.getItem("theme") || "light";
 
 function App() {
   const [theme, setTheme] = useState(themeStorage);
 
   return (
-    <ThemeContext.Provider value={theme as string}>  
-
-      <div className={cn('app',  theme)}>
-      <Quota />
+    <ThemeContext.Provider value={theme as string}>
+      <div className={cn("app", theme)}>
+        <Quota />
         <Player
           theme={theme as string}
           toggleTheme={() => {
@@ -22,7 +21,6 @@ function App() {
             setTheme(theme === "dark" ? "light" : "dark");
           }}
         />
-      
       </div>
     </ThemeContext.Provider>
   );
