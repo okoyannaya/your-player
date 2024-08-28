@@ -15,6 +15,8 @@ export const TrackItem: FC<TrackItemProps> = ({
   onDragEnter,
   fill,
 }) => {
+  console.log('render');
+  
   return (
     <div
       onDragStart={handleDragStart}

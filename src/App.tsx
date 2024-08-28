@@ -7,12 +7,8 @@ import "./App.css";
 export const ThemeContext = createContext("");
 const themeStorage = localStorage.getItem("theme") || "light";
 
-
 function App() {
   const [theme, setTheme] = useState(themeStorage);
-
-console.log('проверка');
-
 
   return (
     <ThemeContext.Provider value={theme as string}>
