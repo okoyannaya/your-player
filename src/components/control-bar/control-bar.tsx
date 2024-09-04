@@ -1,4 +1,6 @@
 import {FC} from "react";
+import cn from "classnames";
+import {ControlBarProps} from "./control-bar.types";
 import Play from "./../icon/play.svg";
 import Pause from "./../icon/pause.svg";
 import Prev from "./../icon/prev.svg";
@@ -7,8 +9,6 @@ import VolumeUp from "../icon/volumeup.svg";
 import VolumeOff from "../icon/volumeoff.svg";
 import Loop from "../icon/loop.svg";
 import Shuffle from "../icon/shuffle.svg";
-import {ControlBarProps} from "./control-bar.types";
-import cn from "classnames";
 import "./control-bar.style.css";
 
 export const ControlBar: FC<ControlBarProps> = ({

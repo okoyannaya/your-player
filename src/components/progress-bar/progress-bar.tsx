@@ -1,10 +1,8 @@
-import React, {FC, useRef, useState, useEffect, useContext} from "react";
-import {ThemeContext} from "../../App";
-import {ProgressBarProps} from "./progress-bar.types";
+import React, {FC, useRef, useState, useEffect} from "react";
 import cn from "classnames";
-
-import "./progress-bar.style.css";
+import {ProgressBarProps} from "./progress-bar.types";
 import {playImages, stopImages} from "./constants";
+import "./progress-bar.style.css";
 
 const currentImgIndex = Number(localStorage.getItem("imgIndex")) || 0;
 
@@ -17,14 +15,13 @@ export const ProgressBar: FC<ProgressBarProps> = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<number | null>(null);
-  const theme = useContext(ThemeContext);
   const [songLength, setSongLength] = useState("0:00");
   const [currentSongTime, setCurrentSongTime] = useState("0:00");
   const [currentImageIndex, setCurrentImageIndex] = useState(currentImgIndex);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  const lineProgress = "circle-progress-" + theme;
-  const progressBar = "circle-bacground-" + theme;
+  const lineProgress = "circle-progress-";
+  const progressBar = "circle-bacground-";
 
   const radius = 140;
   const dashArray = radius * Math.PI * 2;

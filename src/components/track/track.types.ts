@@ -8,6 +8,5 @@ export interface TrackItemProps {
     hendleDragEnd: VoidFunction;
     hendleDragOver: (event: any) => void;
     onDragEnter: VoidFunction;
-    fill: string;
   }
   

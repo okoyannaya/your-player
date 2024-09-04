@@ -1,17 +1,20 @@
-import {FC} from "react";
 import cn from "classnames";
-import {PlayerProps} from "./player.types";
 import {TrackItem} from "../track/track";
 import {ControlBar} from "../control-bar/control-bar";
 import {ProgressBar} from "../progress-bar/progress-bar";
-import {ToggleThemeButton} from "../toggle-theme/toggle-theme";
 import {usePlayerControls} from "../../hooks/usePlayerControls";
+import {useContext} from "react";
 import {usePlaylistManager} from "../../hooks/usePlaylistManager";
-import PlaylistBtn from "../icon/playlist.svg";
+import {HeaderPanel} from "../header-panel/header-panel";
+import {ThemeContext} from "../../ThemeProvider";
+import {useDraggale} from "../../hooks/useDraggable";
 import Add from "../icon/add.svg";
 import "./player.style.css";
 
-export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
+export const Player = () => {
+  const {isDarkTheme} = useContext(ThemeContext);
+  const fillButton = isDarkTheme ? "#fff" : "#000";
+
   const {
     btnPlaylistSlyle,
     handleOpenPlaylist,
@@ -21,6 +24,7 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
     setFilesSong,
     setPlaylist,
     createPlaylistItem,
+    handleFileUpload,
   } = usePlaylistManager();
 
   const {
@@ -33,18 +37,15 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
     handleLoopTrack,
     handleShuffle,
     currentTrackIndex,
-    handleFileUpload,
+
     play,
-    dragItemRef,
-    dragOverRef,
     handleDeleteTrack,
     isPlaying,
-    onDragOver,
-    onDrop,
     pause,
     player,
     skip,
     skipTo,
+    setCurrentTrackIndex,
   } = usePlayerControls({
     createPlaylistItem,
     filesSong,
@@ -53,49 +54,26 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
     setPlaylist,
   });
 
+  const {onDragOver, onDrop, dragItemRef, dragOverRef} = useDraggale({
+    currentTrackIndex,
+    filesSong,
+    playlist,
+    setCurrentTrackIndex,
+    setPlaylist,
+  });
+
   const nameOfTheSong = playlist[currentTrackIndex]?.title.split(" - ");
-  const fillButton = theme === "dark" ? "#fff" : "#000";
 
   return (
     <div className="audio-player">
-      <div className="header_panel">
-        <ToggleThemeButton theme={theme} toggleTheme={toggleTheme} />
-        <div
-          className={cn(
-            "upload",
-            theme === "dark" ? "control-dark" : "control-light"
-          )}
-          title="Добавьте новые песни"
-        >
-          <input
-            id="file-upload"
-            type="file"
-            multiple
-            accept="audio/*"
-            onChange={handleFileUpload}
-          />
-          <label htmlFor="file-upload">
-            <Add
-              className="icon"
-              width="50px"
-              height="50px"
-              fill={fillButton}
-            />
-          </label>
-        </div>
-        <div className="playlist_btn" style={btnPlaylistSlyle}>
-          <PlaylistBtn
-            className="icon"
-            width="50px"
-            height="50px"
-            fill={fillButton}
-            onClick={handleOpenPlaylist}
-          />
-        </div>
-      </div>
+      <HeaderPanel
+        btnPlaylistSlyle={btnPlaylistSlyle}
+        handleFileUpload={handleFileUpload}
+        handleOpenPlaylist={handleOpenPlaylist}
+      />
       {isOpenPlaylist && (
-        <div className={cn("playlist", theme === "dark" && "playlist-dark")}>
-          {playlist.length > 0 ? (
+        <div className={cn("playlist")}>
+          {!!playlist.length ? (
             playlist?.map((track, index) => (
               <TrackItem
                 handleDragStart={() => (dragItemRef.current = index)}
@@ -110,7 +88,6 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
                 skipTo={() => skipTo(index)}
                 title={track.title}
                 key={index}
-                fill={fillButton}
               />
             ))
           ) : (
@@ -164,7 +141,6 @@ export const Player: FC<PlayerProps> = ({theme, toggleTheme}) => {
           isLoop={isLoop}
           handleVolumeOff={handleVolumeOff}
           handleVolumeUp={handleVolumeUp}
-          theme={theme}
           isPlaying={isPlaying}
           next={() => skip("next")}
           pause={pause}

@@ -4,7 +4,3 @@ export interface Track {
   howl?: Howl | null;
 }
 
-export interface PlayerProps {
-  theme?: string;
-  toggleTheme?: VoidFunction;
-}

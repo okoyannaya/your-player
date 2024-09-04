@@ -2,17 +2,16 @@ import {
   useState,
   useRef,
   BaseSyntheticEvent,
-  ChangeEvent,
   useEffect,
 } from "react";
 import {Howl, Howler} from "howler";
 import {Track} from "../components/audio-player/player.types";
-import {deleteSongInPlaylist, savePlaylist} from "../indexeddb/indexeddb";
+import {deleteSongInPlaylist} from "../indexeddb/indexeddb";
 import {SetState} from "../components/types";
 
 const currentIndex = Number(localStorage.getItem("index")) || 0;
 
-interface PlayerControlsProps {
+interface PlayerControlsArgs {
   playlist: Track[];
   filesSong: File[];
   setFilesSong: SetState<File[]>;
@@ -25,8 +24,7 @@ export const usePlayerControls = ({
   filesSong,
   setFilesSong,
   setPlaylist,
-  createPlaylistItem,
-}: PlayerControlsProps) => {
+}: PlayerControlsArgs) => {
   const [volume, setVolume] = useState(1);
   const [isVolumeOff, setIsVolumeOff] = useState(false);
   const [isLoop, setIsLoop] = useState(false);
@@ -34,8 +32,6 @@ export const usePlayerControls = ({
   const [currentTrackIndex, setCurrentTrackIndex] = useState(currentIndex);
   const [isPlaying, setIsPlaying] = useState(false);
   const player = useRef<Howl | null>(null);
-  const dragItemRef = useRef<number | null>(null);
-  const dragOverRef = useRef<number | null>(null);
 
   const createNewTrack = (track: Track) => {
     player.current = new Howl({
@@ -141,21 +137,6 @@ export const usePlayerControls = ({
     skipTo(newIndex);
   };
 
-  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const newTracks = files.map(createPlaylistItem) ?? [];
-      const newPlaylist = [...playlist, ...newTracks];
-      setPlaylist(newPlaylist);
-      setFilesSong((p) => {
-        const result = p?.length ? [...p, ...files] : [...files];
-        savePlaylist(result);
-
-        return result;
-      });
-    }
-  };
-
   const handleDeleteTrack = async (index: number) => {
     const updatedPlaylist = playlist.filter((_, i) => i !== index);
     const newIndex = index < updatedPlaylist.length ? index : 0;
@@ -167,14 +148,12 @@ export const usePlayerControls = ({
       setCurrentTrackIndex(0);
     } else {
       if (index === currentTrackIndex) {
-        console.log("тот трек", index === currentTrackIndex);
         player.current?.stop();
         setIsPlaying(false);
         setCurrentTrackIndex(newIndex);
         const track = updatedPlaylist[newIndex];
         createNewTrack(track);
       } else if (index < currentTrackIndex) {
-        console.log("нетот трек", index !== currentTrackIndex);
         setCurrentTrackIndex(currentTrackIndex - 1);
       }
     }
@@ -193,37 +172,6 @@ export const usePlayerControls = ({
     }
   }, [currentTrackIndex, playlist.length]);
 
-  const onDragOver = (event: BaseSyntheticEvent) => {
-    event.preventDefault();
-  };
-
-  const onDrop = () => {
-    const newPlaylist = [...playlist];
-    const dragItemIndex = dragItemRef.current as number;
-    const dragOverIndex = dragOverRef.current as number;
-
-    const dragFile = filesSong.splice(dragItemIndex, 1)[0];
-    filesSong.splice(dragOverIndex, 0, dragFile);
-
-    const dragItem = newPlaylist.splice(dragItemIndex, 1)[0];
-    newPlaylist.splice(dragOverIndex, 0, dragItem);
-
-    if (currentTrackIndex === dragItemIndex) {
-      setCurrentTrackIndex(dragOverIndex);
-    } else if (dragOverIndex === currentTrackIndex) {
-      if (dragItemIndex > currentTrackIndex) {
-        setCurrentTrackIndex(currentTrackIndex + 1);
-      } else if (dragItemIndex < currentTrackIndex) {
-        setCurrentTrackIndex(currentTrackIndex - 1);
-      }
-    }
-    dragItemRef.current = null;
-    dragOverRef.current = null;
-
-    savePlaylist(filesSong);
-    setPlaylist(newPlaylist);
-  };
-
   return {
     volume,
     isLoop,
@@ -231,16 +179,12 @@ export const usePlayerControls = ({
     isPlaying,
     currentTrackIndex,
     player,
-    dragItemRef,
-    dragOverRef,
+    setCurrentTrackIndex,
     handleVolumeUp,
     handleVolumeOff,
     handleVolumeChange,
     handleLoopTrack,
     handleShuffle,
-    handleFileUpload,
-    onDrop,
-    onDragOver,
     handleDeleteTrack,
     skipTo,
     pause,

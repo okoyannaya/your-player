@@ -1,7 +1,10 @@
-import {FC} from "react";
-import Delete from "./../icon/delete.svg";
+import {FC, useContext} from "react";
 import {TrackItemProps} from "./track.types";
+import { ThemeContext } from "../../ThemeProvider";
+import Delete from "./../icon/delete.svg";
 import "./track.style.css";
+
+
 
 export const TrackItem: FC<TrackItemProps> = ({
   index,
@@ -13,9 +16,10 @@ export const TrackItem: FC<TrackItemProps> = ({
   hendleDragEnd,
   hendleDragOver,
   onDragEnter,
-  fill,
 }) => {
   console.log('render');
+  const {isDarkTheme} = useContext(ThemeContext);
+const fillButton = isDarkTheme ? "#fff" : "#000";
   
   return (
     <div
@@ -24,7 +28,6 @@ export const TrackItem: FC<TrackItemProps> = ({
       onDragOver={hendleDragOver}
       onDragEnter={onDragEnter}
       draggable={true}
-      key={index}
       className={`track ${
         index === currentTrackIndex ? "active" : ""
       } hover-track`}
@@ -36,7 +39,7 @@ export const TrackItem: FC<TrackItemProps> = ({
         width="20px"
         height="20px"
         onClick={handleDeleteTrack}
-        fill={fill}
+        fill={fillButton}
         className="icon"
       />
     </div>
